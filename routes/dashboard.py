@@ -1,5 +1,5 @@
 from telemetry.source import get_reading
-from flask import Blueprint, Response
+from flask import Blueprint, Response, render_template
 import json
 import time
 
@@ -16,6 +16,11 @@ dashboard = Blueprint("dashboard", __name__)
 @dashboard.route("/stream")
 def response():
     return Response(stream(), mimetype="text/event-stream")
+
+@dashboard.route("/")
+def render():
+    return render_template("dashboard.html")
+
 
 
 
