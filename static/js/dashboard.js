@@ -78,3 +78,13 @@ source.onmessage = function(event) {
     brakeChart.update()
     steeringChart.update()
 }
+
+const startBtn = document.getElementById("startBtn")
+startBtn.onclick = function() {
+    fetch("/start", {method: "POST" })
+}
+
+const stopBtn = document.getElementById("stopBtn")
+stopBtn.onclick = function() {
+    fetch("/stop", {method: "POST" })
+}

@@ -1,5 +1,6 @@
 from telemetry.source import get_reading
 from flask import Blueprint, Response, render_template
+from database.recorder import start_session, stop_session, record_reading
 import json
 import time
 
@@ -7,6 +8,7 @@ import time
 def stream():
     while True:
         reading = get_reading()
+        record_reading(reading)
         json_string = json.dumps(reading)
         yield "data: " + json_string + "\n\n"
         time.sleep(0.1)
@@ -20,6 +22,19 @@ def response():
 @dashboard.route("/")
 def render():
     return render_template("dashboard.html")
+
+@dashboard.route("/start", methods=["POST"])
+def start():
+    start_session()
+    return "ok"
+
+@dashboard.route("/stop", methods=["POST"])
+def stop():
+    stop_session()
+    return "ok"
+
+
+
 
 
 
