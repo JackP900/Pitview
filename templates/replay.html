@@ -1,4 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
 
+    <select id="sessionSelect">
+    </select>
+    <button id="playbtn">Play</button>
+    <button id="stopbtn">Stop</button>
+
+    <div id="replaythrottle">
+        <canvas id="throttleReplayChart">
+
+        </canvas>
+    </div>
+    <div id="replaybrake">
+        <canvas id="brakeReplayChart">
+
+        </canvas>
+    </div>
+    <div id="replaysteering">
+        <canvas id="steeringReplayChart">
+
+        </canvas>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/replay.js') }}"></script>
 {% endblock %}
