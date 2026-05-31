@@ -31,3 +31,27 @@ def stop_session():
     global _current_session_id, _recording
     _recording = False
     _current_session_id = None
+
+
+def get_session_reading(session_id):
+    connection = sqlite3.connect("pitview.db")
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM readings WHERE session_id = ? ORDER BY timestamp ASC", (session_id,))
+    rows = cursor.fetchall()
+
+    readings = []
+    for row in rows:
+        readings.append({
+            "id": row[0],
+            "session_id": row[1],
+            "throttle": row[2],
+            "brake": row[3],
+            "steering": row[4],
+            "timestamp": row[5]
+        })
+
+    connection.close()
+    return readings
+
+
