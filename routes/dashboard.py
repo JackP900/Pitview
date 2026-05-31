@@ -1,6 +1,7 @@
 from telemetry.source import get_reading
 from flask import Blueprint, Response, render_template
 from database.recorder import start_session, stop_session, record_reading
+from telemetry.anomaly import detect_anomaly
 import json
 import time
 
@@ -8,6 +9,7 @@ import time
 def stream():
     while True:
         reading = get_reading()
+        reading["anomaly"] = detect_anomaly(reading)
         record_reading(reading)
         json_string = json.dumps(reading)
         yield "data: " + json_string + "\n\n"

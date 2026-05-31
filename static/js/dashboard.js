@@ -55,7 +55,15 @@ const steeringChart = new Chart(document.getElementById("steeringChart"), {
 const source = new EventSource("/stream")
 source.onmessage = function(event) {
     const reading = JSON.parse(event.data)
-    
+
+    if (reading.anomaly == true){
+        message = document.getElementById("anomalyWarning")
+        message.textContent = "Anomaly Detected"
+    }
+    else {
+        document.getElementById("anomalyWarning").textContent = ""
+    }
+
     throttleData.push(reading.throttle)
     brakeData.push(reading.brake)
     steeringData.push(reading.steering)
