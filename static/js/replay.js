@@ -1,4 +1,5 @@
 console.log("replay loaded")
+let intervalId = null
 
 fetch("/sessions")
     .then(response => response.json())
@@ -15,6 +16,7 @@ const throttleData = []
 const brakeData = []
 const steeringData = []
 const labels = []
+const maxPoints = 50
 
 
 const throttleReplayChart = new Chart(document.getElementById("throttleReplayChart"), {
@@ -70,11 +72,40 @@ playBtn.onclick = function() {
         .then(response => response.json())
         .then(readings => {
             let index = 0
-            setInterval(function() {
+            intervalId = setInterval(function() {
                 if (index < readings.length) {
                     const reading = readings[index]
+
+                    throttleData.push(reading.throttle)
+                    brakeData.push(reading.brake)
+                    steeringData.push(reading.steering)
+                    labels.push(labels.length)
+
+                    if (throttleData.length >= maxPoints) {
+                        throttleData.shift()
+                    }
+                    if (brakeData.length >= maxPoints) {
+                        brakeData.shift()
+                    }
+                    if (steeringData.length >= maxPoints) {
+                        steeringData.shift()
+                    }
+                    if (labels.length >= maxPoints) {
+                        labels.shift()
+                    }
+
+                    throttleReplayChart.update()
+                    brakeReplayChart.update()
+                    steeringReplayChart.update()
+
                     index++
                 }
             }, 100)
         })
+}
+
+
+const stopBtn = document.getElementById("stopbtn")
+stopBtn.onclick = function() {
+    clearInterval(intervalId)
 }
