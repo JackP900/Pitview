@@ -55,3 +55,21 @@ def get_session_reading(session_id):
     return readings
 
 
+def get_all_sessions():
+    connection = sqlite3.connect("pitview.db")
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM sessions ORDER BY id DESC")
+    rows = cursor.fetchall()
+
+    id_readings = []
+    for row in rows:
+        id_readings.append({
+            "id": row[0],
+            "created_at": row[1]
+        })
+
+    connection.close()
+    return id_readings
+
+
