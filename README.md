@@ -1,5 +1,5 @@
 PitView
-Video Demo: <URL HERE>
+Video Demo: <[URL HERE](https://youtu.be/rHIyymJQ_-8)>
 Description:
 A telemetry dashboard built for CS50. It tracks brake, throttle, and steering inputs in real time, records sessions to a SQLite database, and lets you play them back afterwards.
 What it does
