@@ -4,12 +4,16 @@ import time
 def arduino():
     port = Serial("/dev/cu.usbmodem1401", 9600)
     while True:
+        port.reset_input_buffer()
         data = port.readline().decode("utf-8").strip("\r\n")
-        split_data = data.split(",")
 
-        steering = int(split_data[0]) / 1023 * 2 - 1
-        throttle = int(split_data[1]) / 1023
-        brake = int(split_data[2]) / 1023
+        try:
+            split_data = data.split(",")
+            steering = int(split_data[0]) / 1023 * 2 - 1
+            throttle = int(split_data[1]) / 1023
+            brake = int(split_data[2]) / 1023
+        except (ValueError, IndexError):
+            continue
 
         inputs = {
             "throttle": throttle,
