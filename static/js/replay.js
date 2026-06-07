@@ -67,11 +67,17 @@ const steeringReplayChart = new Chart(document.getElementById("steeringReplayCha
 
 const playBtn = document.getElementById("playbtn")
 playBtn.onclick = function() {
+    clearInterval(intervalId)
+    throttleData.length = 0
+    brakeData.length = 0
+    steeringData.length = 0
+    labels.length = 0
     const sessionId = document.getElementById("sessionSelect").value
     fetch("/sessions/" + sessionId + "/readings")
         .then(response => response.json())
         .then(readings => {
             let index = 0
+
             intervalId = setInterval(function() {
                 if (index < readings.length) {
                     const reading = readings[index]

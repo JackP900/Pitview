@@ -3,8 +3,8 @@ import time
 
 def arduino():
     port = Serial("/dev/cu.usbmodem1401", 9600)
+    port.reset_input_buffer()
     while True:
-        port.reset_input_buffer()
         data = port.readline().decode("utf-8").strip("\r\n")
 
         try:

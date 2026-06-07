@@ -13,8 +13,6 @@ def stream():
         record_reading(reading)
         json_string = json.dumps(reading)
         yield "data: " + json_string + "\n\n"
-        time.sleep(0.1)
-
 
 dashboard = Blueprint("dashboard", __name__)
 @dashboard.route("/stream")
