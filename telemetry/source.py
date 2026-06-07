@@ -1,4 +1,3 @@
-from telemetry.simulator import Simulator
-_source = Simulator()
+from telemetry.arduino import arduino
 def get_reading():
-    return _source.get_reading()
+    return arduino()
