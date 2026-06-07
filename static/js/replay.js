@@ -7,10 +7,19 @@ fetch("/sessions")
         sessions.forEach(function(session) {
         const option = document.createElement("option")
         option.value = session.id
-        option.text = "Session" + session.id + " - " + new Date(session.created_at * 1000)
+        option.text = session.name
         document.getElementById("sessionSelect").appendChild(option)
         })
     })
+
+const sessionSelect = document.getElementById("sessionSelect")
+const deleteBtn = document.getElementById("deleteBtn")
+deleteBtn.onclick = function() {
+    fetch("/delete/" + sessionSelect.value, {method: "DELETE"})
+    .then(function() {sessionSelect.remove(sessionSelect.selectedIndex)})
+    
+}
+
 
 const throttleData = []
 const brakeData = []
@@ -19,48 +28,24 @@ const labels = []
 const maxPoints = 50
 
 
-const throttleReplayChart = new Chart(document.getElementById("throttleReplayChart"), {
+const telemetryReplayChart = new Chart(document.getElementById("telemetryReplayChart"), {
     type: "line",
     data: {
         labels: labels,
-        datasets: [{
-            label: "Throttle",
-            data: throttleData,
-            borderColor: "green"
-        }]
+        datasets: [
+            {label: "Throttle", data: throttleData, borderColor: "green"},
+            {label: "Brake", data: brakeData, borderColor: "red"},
+            {label: "Steering", data: steeringData, borderColor: "blue"}
+        ]
     },
     options: {
-        animation: false
-    }
-})
-
-const brakeReplayChart = new Chart(document.getElementById("brakeReplayChart"), {
-    type: "line",
-    data: {
-        labels: labels,
-        datasets: [{
-            label: "Brake",
-            data: brakeData,
-            borderColor: "red"
-        }]
-    },
-    options: {
-        animation: false
-    }
-})
-
-const steeringReplayChart = new Chart(document.getElementById("steeringReplayChart"), {
-    type: "line",
-    data: {
-        labels:labels,
-        datasets: [{
-            label: "Steering",
-            data: steeringData,
-            borderColor: "blue"
-        }]
-    },
-    options: {
-        animation: false
+        animation: false,
+        scales: {
+            y: {
+                min: 0,
+                max: 1
+            }
+        }
     }
 })
 
@@ -100,10 +85,7 @@ playBtn.onclick = function() {
                         labels.shift()
                     }
 
-                    throttleReplayChart.update()
-                    brakeReplayChart.update()
-                    steeringReplayChart.update()
-
+                    telemetryReplayChart.update()
                     index++
                 }
             }, 100)

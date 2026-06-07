@@ -1,5 +1,5 @@
 from telemetry.source import get_reading
-from flask import Blueprint, Response, render_template
+from flask import Blueprint, Response, render_template, request
 from database.recorder import start_session, stop_session, record_reading
 from telemetry.anomaly import detect_anomaly
 import json
@@ -25,7 +25,8 @@ def render():
 
 @dashboard.route("/start", methods=["POST"])
 def start():
-    start_session()
+    name = request.json["name"]
+    start_session(name)
     return "ok"
 
 @dashboard.route("/stop", methods=["POST"])

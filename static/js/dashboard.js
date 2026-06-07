@@ -6,51 +6,26 @@ const brakeData = []
 const steeringData = []
 const labels = []
 
-const throttleChart = new Chart(document.getElementById("throttleChart"), {
+const telemetryChart = new Chart(document.getElementById("telemetryChart"), {
     type: "line",
     data: {
         labels: labels,
-        datasets: [{
-            label: "Throttle",
-            data: throttleData,
-            borderColor: "green"
-        }]
+        datasets: [
+            {label: "Throttle", data: throttleData, borderColor: "green"},
+            {label: "Brake", data: brakeData, borderColor: "red"},
+            {label: "Steering", data: steeringData, borderColor: "blue"}
+        ]
     },
     options: {
-        animation: false
+        animation: false,
+        scales: {
+            y: {
+                min: 0,
+                max: 1
+            }
+        }
     }
 })
-
-const brakeChart = new Chart(document.getElementById("brakeChart"), {
-    type: "line",
-    data: {
-        labels: labels,
-        datasets: [{
-            label: "Brake",
-            data: brakeData,
-            borderColor: "red"
-        }]
-    },
-    options: {
-        animation: false
-    }
-})
-
-const steeringChart = new Chart(document.getElementById("steeringChart"), {
-    type: "line",
-    data: {
-        labels: labels,
-        datasets: [{
-            label: "Steering",
-            data: steeringData,
-            borderColor: "blue"
-        }] 
-    },
-    options: {
-        animation: false
-    }
-})
-
 
 const source = new EventSource("/stream")
 source.onmessage = function(event) {
@@ -82,17 +57,26 @@ source.onmessage = function(event) {
         labels.shift()
     }
 
-    throttleChart.update()
-    brakeChart.update()
-    steeringChart.update()
+    telemetryChart.update()
 }
 
 const startBtn = document.getElementById("startBtn")
 startBtn.onclick = function() {
-    fetch("/start", {method: "POST" })
+    document.getElementById("modal").style.display = "block"
 }
 
 const stopBtn = document.getElementById("stopBtn")
 stopBtn.onclick = function() {
     fetch("/stop", {method: "POST" })
+}
+
+const confirmBtn = document.getElementById("confirmBtn")
+confirmBtn.onclick = function() {
+    fetch("/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json"},
+        body: JSON.stringify({ name: document.getElementById("sessionName").value })
+    }).then(function() {
+        document.getElementById("modal").style.display = "none"
+    })
 }

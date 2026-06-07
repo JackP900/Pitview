@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, render_template
-from database.recorder import get_session_reading, get_all_sessions
+from database.recorder import get_session_reading, get_all_sessions, delete_session
 
 session = Blueprint("session", __name__)
 
@@ -16,6 +16,11 @@ def readings_data(id):
 @session.route("/replay", methods=["GET"])
 def render():
     return render_template("replay.html")
+
+@session.route("/delete/<int:id>", methods=["DELETE"])
+def delete(id):
+    delete_session(id)
+    return "ok"
 
 
 

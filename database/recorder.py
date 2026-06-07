@@ -4,14 +4,14 @@ import time
 _current_session_id = None
 _recording = False
 
-def start_session():
+def start_session(name):
     global _recording, _current_session_id
     _recording = True
 
     connection = sqlite3.connect("pitview.db")
     cursor = connection.cursor()
 
-    cursor.execute("INSERT INTO sessions (created_at) VALUES (?)", (time.time(),))
+    cursor.execute("INSERT INTO sessions (created_at, name) VALUES (?, ?)", (time.time(), name,))
 
     _current_session_id = cursor.lastrowid
     connection.commit()
@@ -66,10 +66,22 @@ def get_all_sessions():
     for row in rows:
         id_readings.append({
             "id": row[0],
-            "created_at": row[1]
+            "created_at": row[1],
+            "name": row[2]
         })
 
     connection.close()
     return id_readings
+
+def delete_session(session_id):
+
+    connection = sqlite3.connect("pitview.db")
+    cursor = connection.cursor()
+
+    cursor.execute("DELETE FROM sessions WHERE id = ?", (session_id,))
+    cursor.execute("DELETE FROM readings WHERE session_id = ?", (session_id,))
+
+    connection.commit()
+    connection.close()
 
 

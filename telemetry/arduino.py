@@ -9,7 +9,7 @@ def arduino():
 
         try:
             split_data = data.split(",")
-            steering = int(split_data[0]) / 1023 * 2 - 1
+            steering = int(split_data[0]) / 1023 
             throttle = int(split_data[1]) / 1023
             brake = int(split_data[2]) / 1023
         except (ValueError, IndexError):
