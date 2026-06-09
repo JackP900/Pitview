@@ -22,6 +22,10 @@ const telemetryChart = new Chart(document.getElementById("telemetryChart"), {
             y: {
                 min: 0,
                 max: 1
+            },
+            x: {
+                min: 0,
+                max: 50
             }
         }
     }
@@ -68,6 +72,7 @@ startBtn.onclick = function() {
 const stopBtn = document.getElementById("stopBtn")
 stopBtn.onclick = function() {
     fetch("/stop", {method: "POST" })
+    document.getElementById("recordingIndicator").style.display = "none"
 }
 
 const confirmBtn = document.getElementById("confirmBtn")
@@ -78,5 +83,6 @@ confirmBtn.onclick = function() {
         body: JSON.stringify({ name: document.getElementById("sessionName").value })
     }).then(function() {
         document.getElementById("modal").style.display = "none"
+        document.getElementById("recordingIndicator").style.display = "block"
     })
 }

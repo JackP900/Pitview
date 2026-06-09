@@ -1,14 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
     <div id="modal" style="display:none">
+        <div id="modalBox">
         <input id="sessionName" type="text" placeholder="Session Name">
         <button id="confirmBtn">Start Recording</button>
+
+        </div>
     </div>
-    
+
     <p id="anomalyWarning"></p>
     
     <button id="startBtn">Start Recording</button>
     <button id="stopBtn">Stop Recording</button>
+
+     <div id="recordingIndicator" style="display:none">
+        <span id="recordingDot"></span>
+        <span>Recording</span>
+     </div>
 
     <div>
         <canvas id="telemetryChart">
