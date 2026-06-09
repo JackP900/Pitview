@@ -15,10 +15,15 @@
         <a href="{{ url_for('settings.showsettings') }}">Settings</a>
         <a href="{{ url_for('auth.logout') }}">Logout</a>
     </nav>
+    <div class="page">
     {% endif %}
 
     {% block content %}
     {% endblock %}
+
+    {% if session.get('logged_in') %}
+    </div>
+    {% endif %}
 
 </body>
 </html>

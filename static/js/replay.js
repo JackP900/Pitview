@@ -1,31 +1,44 @@
 console.log("replay loaded")
+
 let intervalId = null
-let allReadings = []
+let allReadingsA = []
+let allReadingsB = []
 let index = 0
 
 fetch("/sessions")
     .then(response => response.json())
     .then(sessions => {
         sessions.forEach(function(session) {
-        const option = document.createElement("option")
-        option.value = session.id
-        option.text = session.name
-        document.getElementById("sessionSelect").appendChild(option)
+        const option1 = document.createElement("option")
+        option1.value = session.id
+        option1.text = session.name
+        document.getElementById("sessionSelect1").appendChild(option1)
+
+        const option2 = document.createElement("option")
+        option2.value = session.id
+        option2.text = session.name
+        document.getElementById("sessionSelect2").appendChild(option2)
         })
     })
 
-const sessionSelect = document.getElementById("sessionSelect")
+
+const sessionSelect1 = document.getElementById("sessionSelect1")
 const deleteBtn = document.getElementById("deleteBtn")
 deleteBtn.onclick = function() {
-    fetch("/delete/" + sessionSelect.value, {method: "DELETE"})
-    .then(function() {sessionSelect.remove(sessionSelect.selectedIndex)})
+    fetch("/delete/" + sessionSelect1.value, {method: "DELETE"})
+    .then(function() {sessionSelect1.remove(sessionSelect1.selectedIndex)})
     
 }
 
 
-const throttleData = []
-const brakeData = []
-const steeringData = []
+const throttleDataA = []
+const brakeDataA = []
+const steeringDataA = []
+
+const throttleDataB = []
+const brakeDataB = []
+const steeringDataB = []
+
 const labels = []
 const maxPoints = 50
 
@@ -35,9 +48,12 @@ const telemetryReplayChart = new Chart(document.getElementById("telemetryReplayC
     data: {
         labels: labels,
         datasets: [
-            {label: "Throttle", data: throttleData, borderColor: "green"},
-            {label: "Brake", data: brakeData, borderColor: "red"},
-            {label: "Steering", data: steeringData, borderColor: "blue"}
+            {label: "Throttle A", data: throttleDataA, borderColor: "green"},
+            {label: "Brake A", data: brakeDataA, borderColor: "red"},
+            {label: "Steering A", data: steeringDataA, borderColor: "blue"},
+            {label: "Throttle B", data: throttleDataB, borderColor: "green", borderDash: [5, 5]},
+            {label: "Brake B", data: brakeDataB, borderColor: "red", borderDash: [5, 5]},
+            {label: "Steering B", data: steeringDataB, borderColor: "blue", borderDash: [5, 5]}
         ]
     },
     options: {
@@ -49,58 +65,101 @@ const telemetryReplayChart = new Chart(document.getElementById("telemetryReplayC
             },
             x: {
                 min: 0,
-                max: 50
+                max: 50,
+                ticks: {
+                    stepsize: 1
+                }
             }
+
+    
         }
     }
 })
 
 
+document.getElementById("throttleCheck").onchange = function() {
+    telemetryReplayChart.data.datasets[0].hidden = !this.checked
+    telemetryReplayChart.data.datasets[3].hidden = !this.checked
+    telemetryReplayChart.update()
+}
+
+document.getElementById("brakeCheck").onchange = function() {
+    telemetryReplayChart.data.datasets[1].hidden = !this.checked
+    telemetryReplayChart.data.datasets[4].hidden = !this.checked
+    telemetryReplayChart.update()
+}
+
+document.getElementById("steeringCheck").onchange = function() {
+    telemetryReplayChart.data.datasets[2].hidden = !this.checked
+    telemetryReplayChart.data.datasets[5].hidden = !this.checked
+    telemetryReplayChart.update()
+}
+
+
 const playBtn = document.getElementById("playbtn")
 playBtn.onclick = function() {
     clearTimeout(intervalId)
-    throttleData.length = 0
-    brakeData.length = 0
-    steeringData.length = 0
+
+    throttleDataA.length = 0
+    brakeDataA.length = 0
+    steeringDataA.length = 0
+
+    throttleDataB.length = 0
+    brakeDataB.length = 0
+    steeringDataB.length = 0
+
     labels.length = 0
-    const sessionId = document.getElementById("sessionSelect").value
-    fetch("/sessions/" + sessionId + "/readings")
-        .then(response => response.json())
-        .then(readings => {
-            allReadings = readings
-            function playNext() {
-                if (index >= allReadings.length - 1) {
-                    return
-                }
-                const reading = allReadings[index]
-                throttleData.push(reading.throttle)
-                brakeData.push(reading.brake)
-                steeringData.push(reading.steering)
-                labels.push(labels.length)
+    index = 0
 
-                if (throttleData.length >= maxPoints) {
-                    throttleData.shift()
-                }
-                if (brakeData.length >= maxPoints) {
-                    brakeData.shift()
-                }
-                if (steeringData.length >= maxPoints) {
-                    steeringData.shift()
-                }
-                if (labels.length >= maxPoints) {
-                    labels.shift()
-                }
+    const sessionId1 = document.getElementById("sessionSelect1").value
+    const sessionId2 = document.getElementById("sessionSelect2").value
 
-                const delay = (allReadings[index + 1].timestamp - allReadings[index].timestamp) * 1000
-                telemetryReplayChart.update()
+    Promise.all([
+        fetch("/sessions/" + sessionId1 + "/readings").then(r => r.json()),
+        fetch("/sessions/" + sessionId2 + "/readings").then(r => r.json())
+    ]).then(function([readingsA, readingsB]) {
+        
+        allReadingsA = readingsA
+        allReadingsB = readingsB
 
-                index++
+        const minlength = Math.min(readingsA.length, readingsB.length)
+        document.getElementById("scrubber").max = minlength - 1
 
-                intervalId = setTimeout(playNext, delay)
-            }
-            document.getElementById("scrubber").max = readings.length - 1
-            playNext()
-        })
+        function playNext() {
+            if (index >= minlength - 1) return
+            
+            const readingA = allReadingsA[index]
+            const readingB = allReadingsB[index]
+
+            throttleDataA.push(readingA.throttle)
+            brakeDataA.push(readingA.brake)
+            steeringDataA.push(readingA.steering)
+
+            throttleDataB.push(readingB.throttle)
+            brakeDataB.push(readingB.brake)
+            steeringDataB.push(readingB.steering)
+
+            labels.push(labels.length)
+
+            if (throttleDataA.length >= maxPoints) { throttleDataA.shift() }
+            if (brakeDataA.length >= maxPoints) { brakeDataA.shift() }
+            if (steeringDataA.length >= maxPoints) { steeringDataA.shift() }
+            if (throttleDataB.length >= maxPoints) { throttleDataB.shift() }
+            if (brakeDataB.length >= maxPoints) { brakeDataB.shift() }
+            if (steeringDataB.length >= maxPoints) { steeringDataB.shift() }
+            if (labels.length >= maxPoints) { labels.shift() }
+
+            const delay = (allReadingsA[index + 1].timestamp - allReadingsA[index].timestamp) * 1000
+            telemetryReplayChart.update()
+            index++
+
+            document.getElementById("scrubber").value = index
+
+            intervalId = setTimeout(playNext, delay)
+        }
+        playNext()
+    })
+      
 }
 
 
@@ -109,26 +168,38 @@ stopBtn.onclick = function() {
     clearTimeout(intervalId)
 }
 
+
 const scrubber = document.getElementById("scrubber")
 scrubber.oninput = function() {
     index = parseInt(scrubber.value)
 
     clearTimeout(intervalId)
-    throttleData.length = 0
-    brakeData.length = 0
-    steeringData.length = 0
+
+    throttleDataA.length = 0
+    brakeDataA.length = 0
+    steeringDataA.length = 0
+
+    throttleDataB.length = 0
+    brakeDataB.length = 0
+    steeringDataB.length = 0
+
     labels.length = 0
 
     const start = Math.max(0, index - maxPoints)
     for (let i = start; i <= index; i++) {
-        const reading = allReadings[i]
-        throttleData.push(reading.throttle)
-        brakeData.push(reading.brake)
-        steeringData.push(reading.steering)
+        const readingA = allReadingsA[i]
+        const readingB = allReadingsB[i]
+
+        throttleDataA.push(readingA.throttle)
+        brakeDataA.push(readingA.brake)
+        steeringDataA.push(readingA.steering)
+
+        throttleDataB.push(readingB.throttle)
+        brakeDataB.push(readingB.brake)
+        steeringDataB.push(readingB.steering)
+
         labels.push(i)
     }
 
     telemetryReplayChart.update()
-
-
 }

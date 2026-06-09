@@ -1,20 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
 
-    <select id="sessionSelect">
-    </select>
-    <button id="deleteBtn">Delete</button>
-
-    <button id="playbtn">Play</button>
-    <button id="stopbtn">Stop</button>
-
-    <div>
-        <canvas id="telemetryReplayChart">
-
-        </canvas>
-        <input type="range" id="scrubber" min="0" max="100" value="0">
+    <div class="replay-controls">
+        <div class="replay-controls-row">
+            <div class="session-select-group">
+                <div class="session-label">Session A</div>
+                <select id="sessionSelect1"></select>
+            </div>
+            <div class="session-select-group">
+                <div class="session-label">Session B</div>
+                <select id="sessionSelect2"></select>
+            </div>
+            <button id="deleteBtn">Delete A</button>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="throttleCheck" checked>
+                    <label for="throttleCheck">Throttle</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="brakeCheck" checked>
+                    <label for="brakeCheck">Brake</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="steeringCheck" checked>
+                    <label for="steeringCheck">Steering</label>
+                </div>
+            </div>
+            <div class="playback-buttons">
+                <button id="playbtn">Play</button>
+                <button id="stopbtn">Stop</button>
+            </div>
+        </div>
     </div>
 
+    <div class="card">
+        <canvas id="telemetryReplayChart"></canvas>
+        <input type="range" id="scrubber" min="0" max="100" value="0">
+    </div>
 
     <script src="{{ url_for('static', filename='js/replay.js') }}"></script>
 {% endblock %}

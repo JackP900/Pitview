@@ -25,7 +25,10 @@ const telemetryChart = new Chart(document.getElementById("telemetryChart"), {
             },
             x: {
                 min: 0,
-                max: 50
+                max: 50,
+                ticks: {
+                    stepsize: 1
+                }
             }
         }
     }
