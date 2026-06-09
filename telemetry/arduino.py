@@ -1,8 +1,12 @@
 from serial import Serial
 import time
+import json
 
 def arduino():
-    port = Serial("/dev/cu.usbmodem1401", 9600)
+    with open("settings.json") as f:
+        data = json.load(f)
+
+    port = Serial(data["port"], data["baud"])
     port.reset_input_buffer()
     while True:
         data = port.readline().decode("utf-8").strip("\r\n")

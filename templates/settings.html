@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" action="/save">
+    <input id="portInput" name="port" type="text" placeholder="Enter Port" value="{{ data.port }}">
+    <input id="baudInput" name="baud" type="number" placeholder="Enter Baud" value="{{ data.baud }}">
+    <button id="submitBtn">Submit</button>
+</form>
+
+{% endblock %}
