@@ -515,3 +515,14 @@ label {
     letter-spacing: 0.04em;
     margin-top: 0.25rem;
 }
+
+/* Replay: three separate per-metric charts */
+.replay-chart {
+    position: relative;
+    height: 200px;
+}
+
+.chart-title {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+}
