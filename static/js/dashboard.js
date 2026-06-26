@@ -6,6 +6,19 @@ const brakeData = []
 const steeringData = []
 const labels = []
 
+let latencySum = 0
+let latencyCount = 0
+let msgCount = 0
+
+setInterval(function() {
+    console.log("readings/sec:", msgCount)
+    msgCount = 0
+}, 1000)
+
+setInterval(function() {
+    telemetryChart.update()
+}, 33)
+
 const telemetryChart = new Chart(document.getElementById("telemetryChart"), {
     type: "line",
     data: {
@@ -38,6 +51,15 @@ const source = new EventSource("/stream")
 source.onmessage = function(event) {
     const reading = JSON.parse(event.data)
 
+    const latencyMs = (Date.now() / 1000 - reading.timestamp) * 1000
+    latencySum += latencyMs
+    latencyCount++
+    if (latencyCount % 100 === 0) {
+        console.log("avg latency:", (latencySum / latencyCount).toFixed(1), "ms")
+    }
+
+    msgCount++
+
     if (reading.anomaly == true){
         message = document.getElementById("anomalyWarning")
         message.textContent = "Anomaly Detected"
@@ -64,7 +86,6 @@ source.onmessage = function(event) {
         labels.shift()
     }
 
-    telemetryChart.update()
 }
 
 const startBtn = document.getElementById("startBtn")

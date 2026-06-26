@@ -1,1 +1,1 @@
-{"port": "/dev/cu.usbmodem1401", "baud": "9600"}
+{"port": "/dev/cu.usbmodem1401", "baud": 250000}
