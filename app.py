@@ -22,6 +22,11 @@ app.register_blueprint(settings)
 
 app.secret_key = config.SECRET_KEY
 
+
+@app.context_processor
+def inject_demo():
+    return {"demo_mode": DEMO_MODE}
+
 @app.before_request
 def check_login():
     if DEMO_MODE:

@@ -8,12 +8,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
 </head>
 <body>
-    {% if session.get('logged_in') %}
+    {% if session.get('logged_in') or demo_mode %}
     <nav>
         <a href="{{ url_for('dashboard.render') }}">Dashboard</a>
         <a href="{{ url_for('session.render') }}">Replay</a>
         <a href="{{ url_for('settings.showsettings') }}">Settings</a>
-        <a href="{{ url_for('auth.logout') }}">Logout</a>
+        {% if not demo_mode %}<a href="{{ url_for('auth.logout') }}">Logout</a>{% endif %}
     </nav>
     <div class="page">
     {% endif %}
@@ -21,7 +21,7 @@
     {% block content %}
     {% endblock %}
 
-    {% if session.get('logged_in') %}
+    {% if session.get('logged_in') or demo_mode %}
     </div>
     {% endif %}
 
