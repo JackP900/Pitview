@@ -68,12 +68,21 @@ python app.py
 ```
  
 Open `http://localhost:5000`. You'll be sent to the login page first; credentials are set in `config.py`.
+
+**No Arduino? Run the simulator.** PitView ships with a built-in fake telemetry source so you can run the whole app without any hardware:
+
+```bash
+PITVIEW_SOURCE=simulator python app.py
+```
+
+This feeds the dashboard realistic lapping data (and the occasional brake/throttle conflict so you can see the anomaly detector fire). It's also what powers the live demo.
  
 ## Project Structure
  
 ```
 telemetry/
   arduino.py      # Reads live data from the Arduino over serial
+  simulator.py    # Fake data source for running without hardware
   source.py       # Single swap point — the rest of the app gets telemetry from here
   anomaly.py      # Brake/throttle conflict detection
 database/

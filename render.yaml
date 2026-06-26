@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: pitview
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --worker-class gthread --workers 1 --threads 8 --timeout 0 --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PITVIEW_SOURCE
+        value: simulator
+      - key: DEMO_MODE
+        value: "1"

@@ -5,6 +5,11 @@ from routes.auth import auth
 from routes.settings import settings
 from database.models import init_db
 import config
+import os
+
+# Open-demo mode: when set, the login wall is bypassed so the deployed
+# demo loads straight to the dashboard.
+DEMO_MODE = os.environ.get("DEMO_MODE", "").lower() in ("1", "true", "yes")
 
 app = Flask(__name__)
 
@@ -19,6 +24,8 @@ app.secret_key = config.SECRET_KEY
 
 @app.before_request
 def check_login():
+    if DEMO_MODE:
+        return
     allowed = ["auth.login"]
     if request.endpoint not in allowed and not session.get("logged_in"):
         return redirect(url_for("auth.login"))
