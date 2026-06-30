@@ -4,8 +4,6 @@
  
 A real-time motorsport telemetry dashboard. PitView reads live input from an Arduino Uno, brake pressure, throttle position, and steering angle and streams it to a browser dashboard as it happens. You can record a session and replay it later, and an anomaly detector flags brake/throttle conflicts while you drive.
  
-**[Watch the demo →](https://youtu.be/rHIyymJQ_-8)**
- 
 ---
  
 ## Features
